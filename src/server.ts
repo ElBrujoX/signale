@@ -1,5 +1,5 @@
 import express from 'express';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
 import { config } from 'dotenv';
 
@@ -21,7 +21,7 @@ app.get('/health', (_req, res) => {
 wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected');
   
-  ws.on('message', (message: WebSocket.RawData) => {
+  ws.on('message', (message: Buffer) => {
     try {
       const data = JSON.parse(message.toString());
       
