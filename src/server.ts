@@ -1,5 +1,5 @@
 import express from 'express';
-import { Server } from 'ws';
+import WebSocket from 'ws';
 import { createServer } from 'http';
 import { config } from 'dotenv';
 
@@ -8,20 +8,20 @@ config();
 
 const app = express();
 const server = createServer(app);
-const wss = new Server({ server });
+const wss = new WebSocket.Server({ server });
 
 // Store connected clients
-const clients = new Map();
+const clients = new Map<string, WebSocket>();
 
 // Basic health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected');
   
-  ws.on('message', (message) => {
+  ws.on('message', (message: WebSocket.RawData) => {
     try {
       const data = JSON.parse(message.toString());
       
@@ -37,7 +37,7 @@ wss.on('connection', (ws) => {
         case 'ice-candidate':
           // Forward the message to the intended recipient
           const targetClient = clients.get(data.agentId);
-          if (targetClient && targetClient.readyState === ws.OPEN) {
+          if (targetClient && targetClient.readyState === WebSocket.OPEN) {
             targetClient.send(JSON.stringify(data));
           }
           break;
@@ -46,7 +46,7 @@ wss.on('connection', (ws) => {
           console.warn(`Unknown message type: ${data.type}`);
       }
     } catch (error) {
-      console.error('Error handling message:', error);
+      console.error('Error handling message:', error instanceof Error ? error.message : error);
     }
   });
 
@@ -61,8 +61,8 @@ wss.on('connection', (ws) => {
     }
   });
 
-  ws.on('error', (error) => {
-    console.error('WebSocket error:', error);
+  ws.on('error', (error: Error) => {
+    console.error('WebSocket error:', error.message);
   });
 });
 
