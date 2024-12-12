@@ -1,5 +1,5 @@
 import express from 'express';
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import { config } from 'dotenv';
 
@@ -8,7 +8,7 @@ config();
 
 const app = express();
 const server = createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 
 // Store connected clients
 const clients = new Map<string, WebSocket>();
