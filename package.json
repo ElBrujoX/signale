@@ -6,7 +6,13 @@
       "start": "node dist/server.js",
       "dev": "tsx watch src/server.ts",
       "build": "tsc",
-      "lint": "eslint ."
+      "lint": "eslint .",
+      "lint:fix": "eslint . --fix",
+      "clean": "rimraf dist",
+      "prebuild": "npm run clean",
+      "typecheck": "tsc --noEmit",
+      "format": "prettier --write \"src/**/*.{ts,js,json}\"",
+      "prepare": "husky install"
     },
     "dependencies": {
       "express": "^4.18.3",
@@ -21,6 +27,18 @@
       "typescript": "^5.3.3",
       "eslint": "^8.57.0",
       "@typescript-eslint/eslint-plugin": "^7.1.1",
-      "@typescript-eslint/parser": "^7.1.1"
+      "@typescript-eslint/parser": "^7.1.1",
+      "rimraf": "^5.0.5",
+      "prettier": "^3.2.5",
+      "husky": "^9.0.11",
+      "lint-staged": "^15.2.2"
+    },
+    "engines": {
+      "node": ">=18.0.0",
+      "npm": ">=8.0.0"
+    },
+    "lint-staged": {
+      "*.{ts,js}": ["eslint --fix", "prettier --write"],
+      "*.{json,md}": ["prettier --write"]
     }
-  }
+}
